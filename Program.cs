@@ -58,20 +58,15 @@ app.MapPut("/products/{id:int}", async (HttpContext context, int id) =>
     var existingProduct = products.Find(p => p.Id == id);
     if (existingProduct == null)
     {
-        context.Response.StatusCode = 404;
-        await context.Response.WriteAsync($"Product with ID {id} not found.");
-        return;
+        return Results.NotFound($"Product with ID {id} not found.");
     }
 
     var updateRequest = await context.Request.ReadFromJsonAsync<ProductUpdateRequest>();
     if (updateRequest == null)
     {
-        context.Response.StatusCode = 400;
-        await context.Response.WriteAsync("Invalid request body.");
-        return;
+        return Results.BadRequest("Invalid request body.");
     }
 
-    // Atnaujiname tik tuos laukus, kurie buvo pateikti
     if (!string.IsNullOrEmpty(updateRequest.Title))
     {
         existingProduct.Title = updateRequest.Title;
@@ -87,7 +82,20 @@ app.MapPut("/products/{id:int}", async (HttpContext context, int id) =>
         existingProduct.Price = updateRequest.Price.Value;
     }
 
-    await context.Response.WriteAsJsonAsync(existingProduct);
+    return Results.Ok(existingProduct);
+});
+
+// 5. Ištrinti produktą pagal ID (DELETE)
+app.MapDelete("/products/{id:int}", (int id) =>
+{
+    var productToRemove = products.Find(p => p.Id == id);
+    if (productToRemove == null)
+    {
+        return Results.NotFound($"Product with ID {id} not found.");
+    }
+
+    products.Remove(productToRemove);
+    return Results.Ok($"Product with ID {id} was deleted.");
 });
 
 app.Run();
@@ -112,5 +120,5 @@ public class ProductUpdateRequest
 {
     public string Title { get; set; }
     public string Description { get; set; }
-    public float? Price { get; set; } // Nullable, kad būtų galima atnaujinti tik dalį laukų
+    public float? Price { get; set; }
 }
