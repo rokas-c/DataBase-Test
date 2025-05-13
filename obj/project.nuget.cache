@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "7MW3DlbGkGo=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\KN214_06\\source\\repos\\DuomenuBazeNEW\\DuomenuBazeNEW.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\KN214_06\\.nuget\\packages\\microsoft.dotnet.ilcompiler\\8.0.8\\microsoft.dotnet.ilcompiler.8.0.8.nupkg.sha512",
+    "C:\\Users\\KN214_06\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.8\\microsoft.net.illink.tasks.8.0.8.nupkg.sha512",
+    "C:\\Users\\KN214_06\\.nuget\\packages\\runtime.win-x64.microsoft.dotnet.ilcompiler\\8.0.8\\runtime.win-x64.microsoft.dotnet.ilcompiler.8.0.8.nupkg.sha512"
+  ],
+  "logs": []
+}
