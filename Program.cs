@@ -19,7 +19,7 @@ var products = new List<Product>();
 app.MapPost("/products", async (HttpContext context) =>
 {
     var request = await context.Request.ReadFromJsonAsync<ProductCreateRequest>();
-    if (request == null)
+    if (request == null || string.IsNullOrEmpty(request.Title))
     {
         context.Response.StatusCode = 400;
         await context.Response.WriteAsync("Invalid request body.");
@@ -41,10 +41,7 @@ app.MapPost("/products", async (HttpContext context) =>
 });
 
 // 2. Gauti visų produktų sąrašą (GET)
-app.MapGet("/products", () =>
-{
-    return Results.Ok(products);
-});
+app.MapGet("/products", () => Results.Ok(products));
 
 // 3. Gauti konkretų produktą pagal ID (GET)
 app.MapGet("/products/{id:int}", (int id) =>
@@ -53,6 +50,44 @@ app.MapGet("/products/{id:int}", (int id) =>
     return product is not null
         ? Results.Ok(product)
         : Results.NotFound($"Product with ID {id} not found.");
+});
+
+// 4. Atnaujinti produktą pagal ID (PUT)
+app.MapPut("/products/{id:int}", async (HttpContext context, int id) =>
+{
+    var existingProduct = products.Find(p => p.Id == id);
+    if (existingProduct == null)
+    {
+        context.Response.StatusCode = 404;
+        await context.Response.WriteAsync($"Product with ID {id} not found.");
+        return;
+    }
+
+    var updateRequest = await context.Request.ReadFromJsonAsync<ProductUpdateRequest>();
+    if (updateRequest == null)
+    {
+        context.Response.StatusCode = 400;
+        await context.Response.WriteAsync("Invalid request body.");
+        return;
+    }
+
+    // Atnaujiname tik tuos laukus, kurie buvo pateikti
+    if (!string.IsNullOrEmpty(updateRequest.Title))
+    {
+        existingProduct.Title = updateRequest.Title;
+    }
+
+    if (!string.IsNullOrEmpty(updateRequest.Description))
+    {
+        existingProduct.Description = updateRequest.Description;
+    }
+
+    if (updateRequest.Price.HasValue)
+    {
+        existingProduct.Price = updateRequest.Price.Value;
+    }
+
+    await context.Response.WriteAsJsonAsync(existingProduct);
 });
 
 app.Run();
@@ -71,4 +106,11 @@ public class ProductCreateRequest
     public string Title { get; set; }
     public string Description { get; set; }
     public float Price { get; set; }
+}
+
+public class ProductUpdateRequest
+{
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public float? Price { get; set; } // Nullable, kad būtų galima atnaujinti tik dalį laukų
 }
