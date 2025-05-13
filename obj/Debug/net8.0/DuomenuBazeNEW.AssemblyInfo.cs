@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DuomenuBazeNEW")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+16ba4236eb112758ef9478d5a147001e8ff4c649")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+51722e376fac65ea566734333c4248d2fffdcce0")]
 [assembly: System.Reflection.AssemblyProductAttribute("DuomenuBazeNEW")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DuomenuBazeNEW")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

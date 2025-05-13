@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json.Serialization;
-using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +12,10 @@ builder.Services.ConfigureHttpJsonOptions(options => {
 
 var app = builder.Build();
 
+// In-memory produktų sąrašas
 var products = new List<Product>();
 
+// 1. Sukurti naują produktą (POST)
 app.MapPost("/products", async (HttpContext context) =>
 {
     var request = await context.Request.ReadFromJsonAsync<ProductCreateRequest>();
@@ -34,17 +35,29 @@ app.MapPost("/products", async (HttpContext context) =>
     };
 
     products.Add(product);
+
+    context.Response.StatusCode = 201;
     await context.Response.WriteAsJsonAsync(product);
 });
 
+// 2. Gauti visų produktų sąrašą (GET)
+app.MapGet("/products", () =>
+{
+    return Results.Ok(products);
+});
+
+// 3. Gauti konkretų produktą pagal ID (GET)
 app.MapGet("/products/{id:int}", (int id) =>
 {
     var product = products.Find(p => p.Id == id);
-    return product is not null ? Results.Ok(product) : Results.NotFound();
+    return product is not null
+        ? Results.Ok(product)
+        : Results.NotFound($"Product with ID {id} not found.");
 });
 
 app.Run();
 
+// Modeliai
 public class Product
 {
     public int Id { get; set; }
