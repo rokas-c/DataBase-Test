@@ -23,3 +23,4 @@ C:\Users\KN214_06\source\repos\DuomenuBazeNEW\obj\Debug\net8.0\refint\DuomenuBaz
 C:\Users\KN214_06\source\repos\DuomenuBazeNEW\obj\Debug\net8.0\DuomenuBazeNEW.pdb
 C:\Users\KN214_06\source\repos\DuomenuBazeNEW\obj\Debug\net8.0\DuomenuBazeNEW.genruntimeconfig.cache
 C:\Users\KN214_06\source\repos\DuomenuBazeNEW\obj\Debug\net8.0\ref\DuomenuBazeNEW.dll
+C:\Users\KN214_06\source\repos\DuomenuBazeNEW\obj\Debug\net8.0\DuomenuBazeNEW.sourcelink.json

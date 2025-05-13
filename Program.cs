@@ -1,40 +1,61 @@
-﻿using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 
 var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
 
-// Visi produktai
-app.MapGet("/", async () =>
-{
-    try
-    {
-        using var httpClient = new HttpClient();
-        var response = await httpClient.GetStringAsync("https://fakestoreapi.com/products");
-        return Results.Text(response, "application/json");
-    }
-    catch (Exception ex)
-    {
-        return Results.Text($"Error: {ex.Message}", "text/plain", statusCode: 500);
-    }
+// Konfigūruojame JSON serializavimą
+builder.Services.ConfigureHttpJsonOptions(options => {
+    options.SerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver();
 });
 
-// Vienas produktas pagal ID
-app.MapGet("/products/{id:int}", async (int id) =>
+var app = builder.Build();
+
+var products = new List<Product>();
+
+app.MapPost("/products", async (HttpContext context) =>
 {
-    try
+    var request = await context.Request.ReadFromJsonAsync<ProductCreateRequest>();
+    if (request == null)
     {
-        using var httpClient = new HttpClient();
-        var response = await httpClient.GetStringAsync($"https://fakestoreapi.com/products/{id}");
-        return Results.Text(response, "application/json");
+        context.Response.StatusCode = 400;
+        await context.Response.WriteAsync("Invalid request body.");
+        return;
     }
-    catch (HttpRequestException ex)
+
+    var product = new Product
     {
-        return Results.Text($"Product not found or API error: {ex.Message}", "text/plain", statusCode: 404);
-    }
-    catch (Exception ex)
-    {
-        return Results.Text($"Unexpected error: {ex.Message}", "text/plain", statusCode: 500);
-    }
+        Id = products.Count + 1,
+        Title = request.Title,
+        Description = request.Description,
+        Price = request.Price
+    };
+
+    products.Add(product);
+    await context.Response.WriteAsJsonAsync(product);
+});
+
+app.MapGet("/products/{id:int}", (int id) =>
+{
+    var product = products.Find(p => p.Id == id);
+    return product is not null ? Results.Ok(product) : Results.NotFound();
 });
 
 app.Run();
+
+public class Product
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public float Price { get; set; }
+}
+
+public class ProductCreateRequest
+{
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public float Price { get; set; }
+}
